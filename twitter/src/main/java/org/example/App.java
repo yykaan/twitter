@@ -1,11 +1,17 @@
 package org.example;
 
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +23,7 @@ import java.util.Objects;
  */
 public class App 
 {
-    public static void main( String[] args ) {
+    public static void main( String[] args ) throws IOException {
         ArrayList<Tweet> tweets = new ArrayList<>();
 
         List<String> years = new ArrayList<>();
@@ -26,6 +32,46 @@ public class App
         addNumbersToList(years, 2006, 2022);
         addNumbersToList(months, 1, 12);
         addNumbersToList(days, 1, 31);
+
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        Sheet sheet = workbook.createSheet("Tweets");
+
+        sheet.setColumnWidth(0, 6000);
+        sheet.setColumnWidth(1, 4000);
+        sheet.setColumnWidth(2, 4000);
+        sheet.setColumnWidth(3, 4000);
+
+        Row header = sheet.createRow(0);
+
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        XSSFFont font = workbook.createFont();
+        font.setFontName("Arial");
+        font.setFontHeightInPoints((short) 16);
+        font.setBold(true);
+        headerStyle.setFont(font);
+
+        Cell headerCell = header.createCell(0);
+        headerCell.setCellValue("User Display Name");
+        headerCell.setCellStyle(headerStyle);
+
+        headerCell = header.createCell(1);
+        headerCell.setCellValue("Username");
+        headerCell.setCellStyle(headerStyle);
+
+        headerCell = header.createCell(2);
+        headerCell.setCellValue("Date");
+        headerCell.setCellStyle(headerStyle);
+
+        headerCell = header.createCell(3);
+        headerCell.setCellValue("Tweet");
+        headerCell.setCellStyle(headerStyle);
+
+        CellStyle style = workbook.createCellStyle();
+        style.setWrapText(true);
 
         WebDriver driver;
 
@@ -70,7 +116,7 @@ public class App
                                 String[] tweetDecomposed = tweet.split("\n");
                                 String displayName = tweetDecomposed[0];
                                 String username = tweetDecomposed[1];
-                                String date = tweetDecomposed[3];
+                                String date = tweetDecomposed[3] + " " + year;
                                 StringBuilder tweetBuilder = new StringBuilder();
                                 if (tweetDecomposed.length > 8) {
                                     for (int k = 4; k + 3 <= tweetDecomposed.length - 4; k++) {
@@ -96,9 +142,35 @@ public class App
         }
 
         driver.quit();
+        int k=2;
         for (Tweet tweet : tweets) {
-            System.out.println(tweet.toString());
+            Row row = sheet.createRow(k);
+
+            Cell cell = row.createCell(0);
+            cell.setCellValue(tweet.getUserDisplayName());
+            cell.setCellStyle(style);
+
+            cell = row.createCell(1);
+            cell.setCellValue(tweet.getUsername());
+            cell.setCellStyle(style);
+
+            cell = row.createCell(2);
+            cell.setCellValue(tweet.getDate());
+            cell.setCellStyle(style);
+
+            cell = row.createCell(3);
+            cell.setCellValue(tweet.getTweet());
+            cell.setCellStyle(style);
+
+            k++;
         }
+        File currDir = new File("/Users/kaan.yilmaz/Documents/GitHub/twitter/twitter/Drivers/");
+        String path = currDir.getAbsolutePath();
+        String fileLocation = path.substring(0, path.length() - 1) + "temp.xlsx";
+
+        FileOutputStream outputStream = new FileOutputStream(fileLocation);
+        workbook.write(outputStream);
+        workbook.close();
     }
 
     private static void addNumbersToList(List<String> list , int start, int end){
@@ -118,6 +190,22 @@ public class App
             this.username = username;
             this.date = date;
             this.tweet = tweet;
+        }
+
+        public String getUserDisplayName() {
+            return userDisplayName;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public String getDate() {
+            return date;
+        }
+
+        public String getTweet() {
+            return tweet;
         }
 
         @Override
