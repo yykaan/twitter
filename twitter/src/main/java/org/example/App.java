@@ -37,16 +37,16 @@ public class App
 
         for (String year : years) {
             try {
-                driver.get("https://twitter.com/search-advanced?lang=tr");
-                driver.manage().window().maximize();
-                driver.findElement(By.xpath("//*[@id=\"layers\"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[2]/div/div[5]/div[1]/div/label/div/div[2]/div/input"))
-                        .sendKeys("@bloombergHT");
-
-                Select selectFromYear = new Select(driver.findElement(By.xpath("/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[2]/div/div[16]/div/div[2]/div/div[3]/select")));
-                Select selectToYear = new Select(driver.findElement(By.xpath("/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[2]/div/div[16]/div/div[4]/div/div[3]/select")));
-                selectFromYear.selectByValue(year);
-                selectToYear.selectByValue(year);
                 for (String month : months) {
+                    driver.get("https://twitter.com/search-advanced?lang=tr");
+                    driver.manage().window().maximize();
+                    driver.findElement(By.xpath("//*[@id=\"layers\"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[2]/div/div[5]/div[1]/div/label/div/div[2]/div/input"))
+                            .sendKeys("@bloombergHT");
+
+                    Select selectFromYear = new Select(driver.findElement(By.xpath("/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[2]/div/div[16]/div/div[2]/div/div[3]/select")));
+                    Select selectToYear = new Select(driver.findElement(By.xpath("/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[2]/div/div[16]/div/div[4]/div/div[3]/select")));
+                    selectFromYear.selectByValue(year);
+                    selectToYear.selectByValue(year);
                     Select selectFromMonth = new Select(driver.findElement(By.xpath("/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[2]/div/div[16]/div/div[2]/div/div[1]/select")));
                     Select selectToMonth = new Select(driver.findElement(By.xpath("/html/body/div[1]/div/div/div[1]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[2]/div/div[16]/div/div[4]/div/div[1]/select")));
                     selectFromMonth.selectByValue(month);
@@ -60,7 +60,7 @@ public class App
                     driver.findElement(By.xpath("//*[@id=\"layers\"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div[1]/div/div/div/div/div/div[3]/div")).click();
 
                     JavascriptExecutor js = (JavascriptExecutor) driver;
-                    for (int i = 1; i < 2; i++) {
+                    for (int i = 1; i < 4; i++) {
                         System.out.println(i);
                         try {
                             Thread.sleep(2500);
