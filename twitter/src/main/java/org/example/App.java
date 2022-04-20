@@ -1,12 +1,15 @@
 package org.example;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.util.StringUtil;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
 import java.io.File;
@@ -29,8 +32,8 @@ public class App
         List<String> years = new ArrayList<>();
         List<String> months = new ArrayList<>();
         List<String> days = new ArrayList<>();
-        addNumbersToList(years, 2006, 2022);
-        addNumbersToList(months, 1, 12);
+        addNumbersToList(years, 2022, 2022);
+        addNumbersToList(months, 1, 6);
         addNumbersToList(days, 1, 31);
 
         XSSFWorkbook workbook = new XSSFWorkbook();
@@ -45,7 +48,7 @@ public class App
         Row header = sheet.createRow(0);
 
         CellStyle headerStyle = workbook.createCellStyle();
-        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+        headerStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex());
         headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
         XSSFFont font = workbook.createFont();
@@ -111,12 +114,13 @@ public class App
                         try {
                             Thread.sleep(2500);
                             List<WebElement> article = driver.findElements(By.tagName("article"));
+
                             for (WebElement webElement : article) {
                                 String tweet = webElement.getText();
                                 String[] tweetDecomposed = tweet.split("\n");
                                 String displayName = tweetDecomposed[0];
                                 String username = tweetDecomposed[1];
-                                String date = tweetDecomposed[3] + " " + year;
+                                String date = webElement.findElement(By.tagName("time")).getDomAttribute("datetime");
                                 StringBuilder tweetBuilder = new StringBuilder();
                                 if (tweetDecomposed.length > 8) {
                                     for (int k = 4; k + 3 <= tweetDecomposed.length - 4; k++) {
@@ -128,6 +132,7 @@ public class App
 
                                 String tweetText = tweetBuilder.toString();
                                 Tweet tweetObject = new Tweet(displayName, username, date, tweetText);
+
                                 tweets.add(tweetObject);
                             }
                             js.executeScript("window.scrollTo(0, document.body.scrollHeight)");
@@ -142,7 +147,7 @@ public class App
         }
 
         driver.quit();
-        int k=2;
+        int k=1;
         for (Tweet tweet : tweets) {
             Row row = sheet.createRow(k);
 
